@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.4'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'maven-publish'
+}
+
+group = 'com.fluidnotions'
+version = '0.0.1'
+
+
+java {
+    sourceCompatibility = "21"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'com.fasterxml.jackson.core:jackson-annotations'
+    compileOnly 'com.fasterxml.jackson.core:jackson-core'
+    compileOnly 'com.fasterxml.jackson.core:jackson-databind'
+    compileOnly 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
+    compileOnly 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
+    compileOnly 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    compileOnly 'com.fasterxml.jackson.module:jackson-module-parameter-names'
+    compileOnly 'org.springframework.boot:spring-boot-starter-web'
+}
+
+def properties = new Properties()
+file(project.rootDir.absolutePath + "/local.properties").withInputStream { properties.load(it) }
+
+
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/fluidnotions/custom-object-mapper-config")
+            credentials {
+                username = properties.getProperty('github.username')
+                password = properties.getProperty('github.token')
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            from(components.java)
+            artifactId = 'custom-object-mapper-config'
+        }
+    }
+}
